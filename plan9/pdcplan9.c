@@ -38,7 +38,7 @@ uint rgbacolors[Ncolors] = {
 	DGreygreen,		/* green */
 	DCyan,     		/* cyan */
 	DRed,      		/* red */
-	DMangenta, 		/* purple */
+	DMagenta, 		/* purple */
 	DDarkyellow,	/* brown */
 	DWhite,    		/* white */
 	0x555555FF,		/* light black aka grey */
