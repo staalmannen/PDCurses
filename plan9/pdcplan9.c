@@ -31,6 +31,28 @@ enum {
 	Eresized = 3,
 };
 
+#ifdef RIO_COLORS
+uint rgbacolors[Ncolors] = {
+	DBlack ,		/* black */
+	DGreyblue, 		/* blue */
+	DGreygreen,		/* green */
+	DCyan,     		/* cyan */
+	DRed,      		/* red */
+	DMagenta, 		/* purple */
+	DDarkyellow,	/* brown */
+	DWhite,    		/* white */
+	0x555555FF,		/* light black aka grey */
+	DPalegreyblue,	/* light blue */
+	DPalegreygreen,	/* light green */
+	0x55FFFFFF,		/* light cyan */
+	0xFF5555FF,		/* light red */
+	0xFF55FFFF,		/* light purple */
+	DYellow,		/* light brown aka yellow */
+	DWhite,    		/* light grey aka white */
+	0x9EEEEFF,
+	0x9EE9EFF,
+};
+#else
 uint rgbacolors[Ncolors] = {
 	0x000000FF,		/* black */
 	0x0000FFFF,		/* blue */
@@ -51,6 +73,7 @@ uint rgbacolors[Ncolors] = {
 	0x9EEEEFF,
 	0x9EE9EFF,
 };
+#endif
 
 static Image *colors[Ncolors];
 
@@ -294,8 +317,13 @@ void p9putc(int y, int x, chtype ch)
 	attr = ch & A_ATTRIBUTES;
 	if (pair_content(PAIR_NUMBER(attr), &fg, &bg) == ERR)
 	{
+#ifdef RIO_COLORS
+		fg = COLOR_BLACK;
+		bg = COLOR_WHITE;
+#else
 		fg = COLOR_WHITE;
 		bg = COLOR_BLACK;
+#endif
 	}
 
 	fg |= attr & A_BOLD ? 8 : 0;
