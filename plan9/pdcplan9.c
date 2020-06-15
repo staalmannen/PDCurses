@@ -1,7 +1,6 @@
 #define _LOCK_EXTENSION
 #define _QLOCK_EXTENSION
 #define _PLAN9_SOURCE
-#define _RESEARCH_SOURCE
 #include <sys/types.h>
 #include <lock.h>
 #include <qlock.h>
@@ -26,33 +25,13 @@
 #include <keyboard.h>
 #include "pdcplan9.h"
 
+extern int _SLEEP(long);
+
 enum {
 	Ncolors = 18,
 	Eresized = 3,
 };
 
-#ifdef RIO_COLORS
-uint rgbacolors[Ncolors] = {
-	DBlack ,		/* black */
-	DGreyblue, 		/* blue */
-	DGreygreen,		/* green */
-	DCyan,     		/* cyan */
-	DRed,      		/* red */
-	DMagenta, 		/* purple */
-	DDarkyellow,	/* brown */
-	DWhite,    		/* white */
-	0x555555FF,		/* light black aka grey */
-	DPalegreyblue,	/* light blue */
-	DPalegreygreen,	/* light green */
-	0x55FFFFFF,		/* light cyan */
-	0xFF5555FF,		/* light red */
-	0xFF55FFFF,		/* light purple */
-	DYellow,		/* light brown aka yellow */
-	DWhite,    		/* light grey aka white */
-	0x9EEEEFF,
-	0x9EE9EFF,
-};
-#else
 uint rgbacolors[Ncolors] = {
 	0x000000FF,		/* black */
 	0x0000FFFF,		/* blue */
@@ -73,7 +52,6 @@ uint rgbacolors[Ncolors] = {
 	0x9EEEEFF,
 	0x9EE9EFF,
 };
-#endif
 
 static Image *colors[Ncolors];
 
@@ -86,7 +64,7 @@ static void fatal(char *s)
 
 void p9napms(int ms)
 {
-    _SLEEP(ms);
+	_SLEEP(ms);
 }
 
 
@@ -129,7 +107,7 @@ int p9getcols(void)
 }
 
 
-#define ms SP->mouse_status	/* I don't like this var name */
+#define ms SP->mouse_status 	/* I don't like this var name */
 static void setms(Mouse m)
 {
 	static uint clickmsec;
@@ -255,25 +233,23 @@ int p9eget(void)
 {
 	char c;
 	Event e;
-	int x = 0;
 
 	if (resized)
 	{
 		resized = FALSE;
 		SP->resized = TRUE;
-		x = KEY_RESIZE;
+		return KEY_RESIZE;
 	}
 	switch (event(&e))
 	{
 	case Emouse:
 		setms(e.mouse);
-		x = KEY_MOUSE;
+		return KEY_MOUSE;
 	case Ekeyboard:
 		if (e.kbdc == Kdel)
 			raise(SIGINT);
-		x = transk(e.kbdc);
-	};
-	return x;
+		return transk(e.kbdc);
+	}
 }
 
 void p9init(void)
@@ -317,13 +293,8 @@ void p9putc(int y, int x, chtype ch)
 	attr = ch & A_ATTRIBUTES;
 	if (pair_content(PAIR_NUMBER(attr), &fg, &bg) == ERR)
 	{
-#ifdef RIO_COLORS
-		fg = COLOR_BLACK;
-		bg = COLOR_WHITE;
-#else
 		fg = COLOR_WHITE;
 		bg = COLOR_BLACK;
-#endif
 	}
 
 	fg |= attr & A_BOLD ? 8 : 0;
