@@ -69,7 +69,7 @@ UPDATE=\
 CC=pcc
 LD=pcc
 CFLAGS= -c -I. -I.. -D_POSIX_SOURCE -D_BSD_EXTENSION -D_C99_SNPRINTF_EXTENSION \
--DHAVE_VSNPRINTF -DRIO_COLORS
+-DHAVE_VSNPRINTF 
 
 %.$O: ../pdcurses/%.c
 	$CC $CFLAGS ../pdcurses/$stem.c
